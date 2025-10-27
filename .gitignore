@@ -36,3 +36,9 @@ coverage/
 .cache/
 tmp/
 temp/
+
+# Prisma
+*.db
+*.db-journal
+.env
+migrations/.DS_Store

@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Example models for the MCP server
+
+// Track component queries made by AI assistants
+model ComponentQuery {
+  id            String   @id @default(uuid())
+  componentName String
+  sessionId     String?
+  timestamp     DateTime @default(now())
+  successful    Boolean  @default(true)
+  errorMessage  String?
+
+  @@index([componentName])
+  @@index([timestamp])
+}
+
+// Store cached component data
+model ComponentCache {
+  id           String   @id @default(uuid())
+  componentName String  @unique
+  content      String
+  lastFetched  DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([lastFetched])
+}
+
+// Example: Track user sessions
+model Session {
+  id        String   @id @default(uuid())
+  userId    String?
+  startTime DateTime @default(now())
+  endTime   DateTime?
+  active    Boolean  @default(true)
+
+  @@index([userId])
+  @@index([active])
+}

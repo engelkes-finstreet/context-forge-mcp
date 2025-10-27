@@ -1,29 +1,35 @@
 -- CreateTable
 CREATE TABLE "ComponentQuery" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "componentName" TEXT NOT NULL,
     "sessionId" TEXT,
-    "timestamp" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "timestamp" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "successful" BOOLEAN NOT NULL DEFAULT true,
-    "errorMessage" TEXT
+    "errorMessage" TEXT,
+
+    CONSTRAINT "ComponentQuery_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "ComponentCache" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "componentName" TEXT NOT NULL,
     "content" TEXT NOT NULL,
-    "lastFetched" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "lastFetched" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ComponentCache_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Session" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "userId" TEXT,
-    "startTime" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "endTime" DATETIME,
-    "active" BOOLEAN NOT NULL DEFAULT true
+    "startTime" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "endTime" TIMESTAMP(3),
+    "active" BOOLEAN NOT NULL DEFAULT true,
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex

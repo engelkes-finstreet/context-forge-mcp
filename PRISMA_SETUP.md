@@ -15,13 +15,19 @@ This document provides a complete guide for using Prisma ORM in this MCP server 
 
 ## Overview
 
-This project uses **Prisma** as its ORM (Object-Relational Mapping) tool to interact with the database. Prisma provides:
+This project uses **Prisma** as its ORM (Object-Relational Mapping) tool to interact with a **PostgreSQL** database. Prisma provides:
 
 - Type-safe database queries
 - Auto-generated TypeScript types
 - Database migrations
 - Intuitive query API
 - Database introspection
+
+### Prerequisites
+
+- **PostgreSQL** 12 or higher installed and running
+- A PostgreSQL database created (default: `mcp_dev`)
+- PostgreSQL user with database access (default: `postgres/postgres`)
 
 ## Installation
 
@@ -46,23 +52,27 @@ Copy `.env.example` to `.env` and update the `DATABASE_URL`:
 cp .env.example .env
 ```
 
-The default configuration uses SQLite:
+The default configuration uses **PostgreSQL**:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/mcp_dev?schema=public"
 ```
+
+**Important**: Make sure you have PostgreSQL installed and running locally, or update the connection string to point to your PostgreSQL server.
 
 For other databases:
 
-**PostgreSQL:**
+**SQLite** (for local development):
 ```env
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
+DATABASE_URL="file:./dev.db"
 ```
 
 **MySQL:**
 ```env
 DATABASE_URL="mysql://USER:PASSWORD@HOST:PORT/DATABASE"
 ```
+
+Note: If you switch database providers, you'll need to update the `provider` field in `prisma/schema.prisma` and regenerate migrations.
 
 ### 2. Generate Prisma Client
 
@@ -81,9 +91,23 @@ npm run db:migrate
 ```
 
 This will:
-- Create the database file (for SQLite)
+- Create the database (for PostgreSQL, make sure the server is running)
 - Run all migrations in `prisma/migrations/`
 - Generate the Prisma Client
+
+**Note**: For PostgreSQL, you need to create the database first:
+```bash
+# Connect to PostgreSQL
+psql -U postgres
+
+# Create database
+CREATE DATABASE mcp_dev;
+
+# Exit
+\q
+```
+
+Alternatively, Prisma will attempt to create the database for you if your user has sufficient permissions.
 
 ## Schema Overview
 

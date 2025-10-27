@@ -10,40 +10,130 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Example models for the MCP server
+// BetterAuth Schema Models
 
-// Track component queries made by AI assistants
-model ComponentQuery {
-  id            String   @id @default(uuid())
-  componentName String
-  sessionId     String?
-  timestamp     DateTime @default(now())
-  successful    Boolean  @default(true)
-  errorMessage  String?
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  name          String?
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  @@index([componentName])
-  @@index([timestamp])
+  sessions Session[]
+  accounts Account[]
+
+  @@map("users")
 }
 
-// Store cached component data
-model ComponentCache {
-  id           String   @id @default(uuid())
-  componentName String  @unique
-  content      String
-  lastFetched  DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@index([lastFetched])
-}
-
-// Example: Track user sessions
 model Session {
-  id        String   @id @default(uuid())
-  userId    String?
-  startTime DateTime @default(now())
-  endTime   DateTime?
-  active    Boolean  @default(true)
+  id        String   @id @default(cuid())
+  userId    String
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@index([active])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, value])
+  @@map("verifications")
+}
+
+// Context Forge Models
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  githubRepo  String?
+  swaggerPath String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tasks Task[]
+
+  @@map("projects")
+}
+
+model Task {
+  id            String   @id @default(cuid())
+  projectId     String
+  name          String
+  featureName String
+  product     String
+  role        String
+  sharedContext String   @db.Text
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  project  Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  subtasks Subtask[]
+
+  @@index([projectId])
+  @@map("tasks")
+}
+
+enum SubtaskType {
+  GENERIC
+  INQUIRY_PROCESS
+  FORM
+  MODAL
+  REQUEST
+  PRESENTATION_LIST
+}
+
+model Subtask {
+  id          String      @id @default(cuid())
+  taskId      String
+  name        String
+  type        SubtaskType @default(GENERIC)
+  content     String      @db.Text
+  metadata    Json?
+  order       Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@map("subtasks")
 }

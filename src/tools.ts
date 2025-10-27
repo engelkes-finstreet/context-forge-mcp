@@ -6,6 +6,7 @@
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { registerTaskTools } from "./utils/task-tools.js";
 
 // Create a wrapper for the McpServer to add logging
 class LoggingMcpServer extends McpServer {
@@ -35,6 +36,7 @@ export function createServer() {
   });
 
   // Register all tools
+  registerTaskTools(server);
 
   return server;
 }

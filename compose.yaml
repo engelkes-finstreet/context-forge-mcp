@@ -1,15 +1,22 @@
 version: "3.8"
 
 services:
-  mcp-server-http:
+  context-forge-mcp:
     build:
       context: .
       dockerfile: Dockerfile.http
-    container_name: mcp-server-http
+    container_name: context-forge-mcp
     ports:
       - "4445:3000"
-    volumes:
-      - ./src:/app/src
     env_file:
       - .env
+    environment:
+      # Override DATABASE_URL to use container name instead of localhost
+      DATABASE_URL: "postgresql://postgres:postgres@context-forge-postgres_dev:5432/context-forge-dev?schema=public"
     restart: unless-stopped
+    networks:
+      - context-forge-network
+
+networks:
+  context-forge-network:
+    external: true

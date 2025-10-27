@@ -23,6 +23,12 @@ npm run clean
 
 # Run with Docker (HTTP mode)
 docker compose up
+
+# Database commands (Prisma)
+npm run db:generate     # Generate Prisma Client
+npm run db:migrate      # Run database migrations
+npm run db:studio       # Open Prisma Studio (database GUI)
+npm run prisma:example  # Run Prisma usage examples
 ```
 
 ## Architecture
@@ -40,6 +46,10 @@ docker compose up
 2. **Session Management**: HTTP server tracks multiple connections via session IDs
 3. **Schema Validation**: All tool inputs validated with Zod schemas
 4. **Error Handling**: Uses MCP-specific error types (McpError)
+5. **Database**: Prisma ORM with PostgreSQL (see `PRISMA_SETUP.md` for complete guide)
+   - Database utility: `src/utils/db.ts`
+   - Schema: `prisma/schema.prisma`
+   - Usage examples: `src/examples/prisma-usage.ts`
 
 ### Adding New Tools
 
@@ -50,7 +60,9 @@ docker compose up
 ### Environment Configuration
 
 - `PORT`: HTTP server port (default: 3000)
-- No external configuration files required
+- `DATABASE_URL`: PostgreSQL connection URL (default: `postgresql://postgres:postgres@localhost:5432/mcp_dev?schema=public`)
+- `GITHUB_TOKEN`: GitHub API token (optional, for higher rate limits)
+- See `.env.example` for all available environment variables
 
 ## Important Notes
 

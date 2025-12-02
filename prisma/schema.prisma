@@ -80,17 +80,25 @@ model Verification {
 // Context Forge Models
 
 model Project {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  githubRepo  String?
-  swaggerPath String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  feGithubRepo String?
+  beGithubRepo String?
+  swaggerPath  String?
+  routesPath   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   tasks Task[]
 
   @@map("projects")
+}
+
+enum Status {
+  OPEN
+  IN_PROGRESS
+  DONE
 }
 
 model Task {
@@ -98,9 +106,10 @@ model Task {
   projectId     String
   name          String
   featureName String
-  product     String
-  role        String
+  product     String?
+  role        String?
   sharedContext String   @db.Text
+  status        Status   @default(OPEN)
   order         Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -118,13 +127,18 @@ enum SubtaskType {
   FORM
   MODAL
   REQUEST
-  PRESENTATION_LIST
+  INTERACTIVE_LIST
+  LIST_ACTIONS_AND_PAGINATION
+  SIMPLE_FORM
+  PAGE
+  OVERVIEW
 }
 
 model Subtask {
   id          String      @id @default(cuid())
   taskId      String
   name        String
+  status      Status      @default(OPEN)
   type        SubtaskType @default(GENERIC)
   content     String      @db.Text
   metadata    Json?
